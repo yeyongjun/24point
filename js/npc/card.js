@@ -4,7 +4,10 @@ import { SCREEN_WIDTH, SCREEN_HEIGHT } from '../render';
 // 卡片相关常量
 const CARD_WIDTH = 80;
 const CARD_HEIGHT = 120;
-const CARD_COLORS = ['#f44336', '#2196f3', '#4caf50', '#ff9800']; // 红、蓝、绿、橙
+// 扁平化设计的颜色方案 - 更柔和的色调
+const CARD_COLORS = ['#e57373', '#64b5f6', '#81c784', '#ffb74d']; // 浅红、浅蓝、浅绿、浅橙
+const CARD_SHADOW_COLOR = 'rgba(0, 0, 0, 0.2)'; // 阴影颜色
+const CARD_BORDER_RADIUS = 8; // 圆角半径
 
 /**
  * 数字卡片类
@@ -87,24 +90,67 @@ export default class Card extends Sprite {
   render(ctx) {
     if (!this.visible) return;
     
-    // 绘制卡片背景
-    ctx.fillStyle = this.used ? '#aaaaaa' : (this.selected ? '#ffeb3b' : this.color);
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.save();
+    
+    // 绘制卡片阴影
+    ctx.shadowColor = CARD_SHADOW_COLOR;
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    
+    // 绘制卡片背景（带圆角）
+    ctx.beginPath();
+    ctx.moveTo(this.x + CARD_BORDER_RADIUS, this.y);
+    ctx.lineTo(this.x + this.width - CARD_BORDER_RADIUS, this.y);
+    ctx.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + CARD_BORDER_RADIUS, CARD_BORDER_RADIUS);
+    ctx.lineTo(this.x + this.width, this.y + this.height - CARD_BORDER_RADIUS);
+    ctx.arcTo(this.x + this.width, this.y + this.height, this.x + this.width - CARD_BORDER_RADIUS, this.y + this.height, CARD_BORDER_RADIUS);
+    ctx.lineTo(this.x + CARD_BORDER_RADIUS, this.y + this.height);
+    ctx.arcTo(this.x, this.y + this.height, this.x, this.y + this.height - CARD_BORDER_RADIUS, CARD_BORDER_RADIUS);
+    ctx.lineTo(this.x, this.y + CARD_BORDER_RADIUS);
+    ctx.arcTo(this.x, this.y, this.x + CARD_BORDER_RADIUS, this.y, CARD_BORDER_RADIUS);
+    ctx.closePath();
+    
+    // 设置卡片颜色
+    if (this.used) {
+      ctx.fillStyle = '#bdbdbd'; // 已使用的卡片颜色
+    } else if (this.selected) {
+      ctx.fillStyle = '#fff176'; // 选中的卡片颜色
+    } else {
+      ctx.fillStyle = this.color;
+    }
+    
+    ctx.fill();
+    ctx.shadowColor = 'transparent'; // 关闭阴影，避免影响边框
     
     // 绘制卡片边框
-    ctx.strokeStyle = this.selected ? '#ff5722' : '#ffffff';
-    ctx.lineWidth = this.selected ? 3 : 1;
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    if (this.selected) {
+      ctx.strokeStyle = '#fb8c00';
+      ctx.lineWidth = 3;
+    } else {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.lineWidth = 1;
+    }
+    ctx.stroke();
     
     // 绘制卡片数字
     ctx.fillStyle = '#ffffff';
-    ctx.font = '36px Arial';
+    ctx.font = 'bold 36px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    
+    // 添加文字阴影效果
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    
     ctx.fillText(
       this.number.toString(),
       this.x + this.width / 2,
       this.y + this.height / 2
     );
+    
+    ctx.restore();
   }
 }

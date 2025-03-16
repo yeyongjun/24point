@@ -37,6 +37,9 @@ export default class Main {
     
     // 开始游戏
     this.start();
+    
+    // 播放背景音乐
+    GameGlobal.musicManager.playBGM();
   }
   
   /**
@@ -75,6 +78,9 @@ export default class Main {
     // 如果卡片已被使用，则不做任何操作
     if (card.used) return;
     
+    // 播放点击音效
+    GameGlobal.musicManager.playClick();
+    
     // 添加数字到表达式
     if (this.expression.addNumber(card.number, index)) {
       card.markAsUsed();
@@ -92,6 +98,9 @@ export default class Main {
   selectOperator(index) {
     const operator = this.operators[index];
     
+    // 播放点击音效
+    GameGlobal.musicManager.playClick();
+    
     // 添加运算符到表达式
     if (this.expression.addOperator(operator.getValue())) {
       // 取消所有运算符的选中状态
@@ -107,10 +116,16 @@ export default class Main {
     const isCorrect = Calculator.validateExpression(expression);
     
     if (isCorrect) {
+      // 播放正确音效
+      GameGlobal.musicManager.playCorrect();
+      
       // 答案正确，增加分数并进入下一关
       GameGlobal.databus.score += Math.max(10, Math.floor(50 * (this.timeLimit - this.timer) / this.timeLimit));
       this.nextLevel();
     } else {
+      // 播放错误音效
+      GameGlobal.musicManager.playWrong();
+      
       // 答案错误，重置当前关卡
       this.resetLevel();
     }
@@ -121,6 +136,8 @@ export default class Main {
    */
   nextLevel() {
     this.level++;
+    // 播放升级音效
+    GameGlobal.musicManager.playLevelUp();
     this.resetLevel();
   }
   
@@ -189,6 +206,8 @@ export default class Main {
       // 时间到，游戏结束
       if (this.timer >= this.timeLimit) {
         GameGlobal.databus.gameOver();
+        // 播放游戏结束音效
+        GameGlobal.musicManager.playGameOver();
       }
     }
   }

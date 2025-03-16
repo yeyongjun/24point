@@ -5,7 +5,9 @@ import { SCREEN_WIDTH, SCREEN_HEIGHT } from '../render';
 const OPERATOR_WIDTH = 60;
 const OPERATOR_HEIGHT = 60;
 const OPERATORS = ['+', '-', '×', '÷'];
-const OPERATOR_COLOR = '#673ab7'; // 紫色
+const OPERATOR_COLOR = '#7e57c2'; // 更柔和的紫色
+const OPERATOR_SELECTED_COLOR = '#5e35b1'; // 选中时的颜色
+const OPERATOR_SHADOW_COLOR = 'rgba(0, 0, 0, 0.2)'; // 阴影颜色
 
 /**
  * 运算符类
@@ -79,14 +81,24 @@ export default class Operator extends Sprite {
   render(ctx) {
     if (!this.visible) return;
     
+    ctx.save();
+    
+    // 绘制运算符阴影
+    ctx.shadowColor = OPERATOR_SHADOW_COLOR;
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    
     // 绘制运算符背景
-    ctx.fillStyle = this.selected ? '#9c27b0' : OPERATOR_COLOR;
+    ctx.fillStyle = this.selected ? OPERATOR_SELECTED_COLOR : OPERATOR_COLOR;
     ctx.beginPath();
     ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, 2 * Math.PI);
     ctx.fill();
     
+    ctx.shadowColor = 'transparent'; // 关闭阴影，避免影响边框
+    
     // 绘制运算符边框
-    ctx.strokeStyle = this.selected ? '#e91e63' : '#ffffff';
+    ctx.strokeStyle = this.selected ? '#e1bee7' : 'rgba(255, 255, 255, 0.8)';
     ctx.lineWidth = this.selected ? 3 : 1;
     ctx.beginPath();
     ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, 2 * Math.PI);
@@ -94,13 +106,22 @@ export default class Operator extends Sprite {
     
     // 绘制运算符符号
     ctx.fillStyle = '#ffffff';
-    ctx.font = '36px Arial';
+    ctx.font = 'bold 36px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    
+    // 添加文字阴影效果
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    
     ctx.fillText(
       this.type,
       this.x + this.width / 2,
       this.y + this.height / 2
     );
+    
+    ctx.restore();
   }
 }

@@ -7,7 +7,6 @@ const PLAYER_IMG_SRC = 'images/hero.png';
 const PLAYER_WIDTH = 80;
 const PLAYER_HEIGHT = 80;
 const EXPLO_IMG_PREFIX = 'images/explosion';
-const PLAYER_SHOOT_INTERVAL = 20;
 
 export default class Player extends Animation {
   constructor() {
@@ -117,26 +116,12 @@ export default class Player extends Animation {
     });
   }
 
-  /**
-   * 玩家射击操作
-   * 射击时机由外部决定
-   */
-  shoot() {
-    const bullet = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
-    bullet.init(this.x + this.width / 2 - bullet.width / 2, this.y - 10, 10);
-    GameGlobal.databus.bullets.push(bullet);
-    GameGlobal.musicManager.playShoot(); // 播放射击音效
-  }
 
   update() {
     if (GameGlobal.databus.isGameOver) {
       return;
     }
 
-    // 每20帧让玩家射击一次
-    if (GameGlobal.databus.frame % PLAYER_SHOOT_INTERVAL === 0) {
-      this.shoot(); // 玩家射击
-    }
   }
 
   destroy() {

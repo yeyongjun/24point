@@ -77,18 +77,41 @@ export default class Expression {
    * 绘制表达式
    */
   render(ctx) {
-    // 绘制表达式背景
+    ctx.save();
+    
+    // 绘制表达式背景（带阴影）
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    
+    // 绘制圆角矩形背景
+    const radius = 8;
+    ctx.beginPath();
+    ctx.moveTo(this.x + radius, this.y);
+    ctx.lineTo(this.x + this.width - radius, this.y);
+    ctx.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + radius, radius);
+    ctx.lineTo(this.x + this.width, this.y + this.height - radius);
+    ctx.arcTo(this.x + this.width, this.y + this.height, this.x + this.width - radius, this.y + this.height, radius);
+    ctx.lineTo(this.x + radius, this.y + this.height);
+    ctx.arcTo(this.x, this.y + this.height, this.x, this.y + this.height - radius, radius);
+    ctx.lineTo(this.x, this.y + radius);
+    ctx.arcTo(this.x, this.y, this.x + radius, this.y, radius);
+    ctx.closePath();
+    
     ctx.fillStyle = '#f5f5f5';
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fill();
+    
+    ctx.shadowColor = 'transparent'; // 关闭阴影，避免影响边框
     
     // 绘制表达式边框
-    ctx.strokeStyle = '#9e9e9e';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.strokeStyle = 'rgba(158, 158, 158, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
     
     // 绘制表达式文本
-    ctx.fillStyle = '#212121';
-    ctx.font = '24px Arial';
+    ctx.fillStyle = '#424242';
+    ctx.font = 'bold 24px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
@@ -96,5 +119,7 @@ export default class Expression {
       this.x + this.width / 2,
       this.y + this.height / 2
     );
+    
+    ctx.restore();
   }
 }
