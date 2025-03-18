@@ -17,16 +17,8 @@ export default class BackGround extends Sprite {
   }
 
   update() {
-    if (GameGlobal.databus.isGameOver) {
-      return;
-    }
-  
-    this.top += BACKGROUND_SPEED;
-
-    // 如果背景滚动超过屏幕高度，则重置
-    if (this.top >= SCREEN_HEIGHT) {
-      this.top = 0;
-    }
+    // 取消背景动态效果，不再更新top值
+    return;
   }
 
   /**
@@ -36,7 +28,7 @@ export default class BackGround extends Sprite {
    * 第二张补全除了 top 高度之外的部分，其余的隐藏在屏幕下面
    */
   render(ctx) {
-    // 绘制第一张背景
+    // 静态绘制背景图片，铺满整个屏幕
     ctx.drawImage(
       this.img,
       0,
@@ -44,20 +36,7 @@ export default class BackGround extends Sprite {
       this.width,
       this.height,
       0,
-      -SCREEN_HEIGHT + this.top,
-      SCREEN_WIDTH,
-      SCREEN_HEIGHT
-    );
-
-    // 绘制第二张背景
-    ctx.drawImage(
-      this.img,
       0,
-      0,
-      this.width,
-      this.height,
-      0,
-      this.top,
       SCREEN_WIDTH,
       SCREEN_HEIGHT
     );
