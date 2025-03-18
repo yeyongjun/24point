@@ -4,6 +4,112 @@
  */
 export default class Calculator {
   /**
+   * 生成有效的24点问题
+   * 确保生成的数字有解
+   */
+  static generateValidProblem() {
+    let numbers;
+    do {
+      numbers = this.generateNumbers();
+    } while (!this.hasValidSolution(numbers));
+    return numbers;
+  }
+  
+  /**
+   * 查找一个可能的解法
+   * @param {Array} numbers - 四个数字
+   * @returns {string} - 返回一个可能的解法表达式，如果没有解法则返回null
+   */
+  static findOneSolution(numbers) {
+    if (numbers.length !== 4) return null;
+    
+    // 复制数组，避免修改原数组
+    const nums = [...numbers];
+    
+    // 获取所有可能的数字排列
+    const permutations = this.getAllPermutations(nums);
+    
+    // 获取所有可能的运算符组合
+    const operators = ['+', '-', '*', '/'];
+    const operatorCombinations = this.getAllOperatorCombinations(operators, 3);
+    
+    // 获取所有可能的运算顺序（括号位置）
+    const computeOrders = [
+      // (a op b) op (c op d)
+      (a, b, c, d, op1, op2, op3) => {
+        const result = this.compute(this.compute(a, b, op1), this.compute(c, d, op3), op2);
+        if (Math.abs(result - 24) < 0.0001) {
+          return `(${a}${this.getDisplayOperator(op1)}${b})${this.getDisplayOperator(op2)}(${c}${this.getDisplayOperator(op3)}${d})`;
+        }
+        return null;
+      },
+      // ((a op b) op c) op d
+      (a, b, c, d, op1, op2, op3) => {
+        const result = this.compute(this.compute(this.compute(a, b, op1), c, op2), d, op3);
+        if (Math.abs(result - 24) < 0.0001) {
+          return `((${a}${this.getDisplayOperator(op1)}${b})${this.getDisplayOperator(op2)}${c})${this.getDisplayOperator(op3)}${d}`;
+        }
+        return null;
+      },
+      // (a op (b op c)) op d
+      (a, b, c, d, op1, op2, op3) => {
+        const result = this.compute(this.compute(a, this.compute(b, c, op2), op1), d, op3);
+        if (Math.abs(result - 24) < 0.0001) {
+          return `(${a}${this.getDisplayOperator(op1)}(${b}${this.getDisplayOperator(op2)}${c}))${this.getDisplayOperator(op3)}${d}`;
+        }
+        return null;
+      },
+      // a op ((b op c) op d)
+      (a, b, c, d, op1, op2, op3) => {
+        const result = this.compute(a, this.compute(this.compute(b, c, op2), d, op3), op1);
+        if (Math.abs(result - 24) < 0.0001) {
+          return `${a}${this.getDisplayOperator(op1)}((${b}${this.getDisplayOperator(op2)}${c})${this.getDisplayOperator(op3)}${d})`;
+        }
+        return null;
+      },
+      // a op (b op (c op d))
+      (a, b, c, d, op1, op2, op3) => {
+        const result = this.compute(a, this.compute(b, this.compute(c, d, op3), op2), op1);
+        if (Math.abs(result - 24) < 0.0001) {
+          return `${a}${this.getDisplayOperator(op1)}(${b}${this.getDisplayOperator(op2)}(${c}${this.getDisplayOperator(op3)}${d}))`;
+        }
+        return null;
+      }
+    ];
+    
+    // 尝试所有可能的组合
+    for (const perm of permutations) {
+      for (const ops of operatorCombinations) {
+        for (const computeOrder of computeOrders) {
+          try {
+            const solution = computeOrder(perm[0], perm[1], perm[2], perm[3], ops[0], ops[1], ops[2]);
+            if (solution) {
+              return solution;
+            }
+          } catch (e) {
+            // 忽略计算错误（如除以零）
+            continue;
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+  
+  /**
+   * 将内部运算符转换为显示用的运算符
+   */
+  static getDisplayOperator(op) {
+    switch(op) {
+      case '+': return '+';
+      case '-': return '-';
+      case '*': return '×';
+      case '/': return '÷';
+      default: return op;
+    }
+  }
+  /**
    * 生成随机的1-13之间的整数（模拟扑克牌）
    */
   static generateRandomNumber() {
