@@ -1,4 +1,6 @@
 import './render'; // 初始化Canvas
+import {SCREEN_WIDTH} from './render';
+import {SCREEN_HEIGHT} from './render';
 import Card from './npc/card'; // 导入卡片类
 import Operator from './npc/operator'; // 导入运算符类
 import Calculator from './npc/calculator'; // 导入计算器类
@@ -50,7 +52,7 @@ export default class Main {
     this.start('normal');
     
     // 播放背景音乐
-    GameGlobal.musicManager.playBGM();
+    // GameGlobal.musicManager.playBGM();
   }
   
   /**
